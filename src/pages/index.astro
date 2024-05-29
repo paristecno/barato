@@ -1,11 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Hola from '../components/Hola';
+import Banner from '../components/Banner/Banner';
+import ProductList from '../components/ProductList/ProductList';
+import Footer from '../components/Footer/Footer.astro';
 ---
 
 <Layout title="Welcome to Astro.">
-	<main>
-		<Hola/>
-	</main>
+<Banner client:load/>
+<ProductList client:load/>
+<Footer/>
 </Layout>
 
