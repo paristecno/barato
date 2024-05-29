@@ -3,7 +3,7 @@ name: Deploy Astro site to GitHub Pages
 on:
   push:
     branches:
-      - master # Asegúrate de que esta sea la rama en la que quieres desplegar
+      - master
 
 jobs:
   build:
@@ -15,7 +15,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
-          node-version: '>=18.14' # Usa una versión de Node.js compatible con tu proyecto
+          node-version: '18.x'
 
       - name: Install dependencies
         run: npm install
@@ -23,9 +23,11 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Check for built files
+        run: ls -la ./dist
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GH_TOKEN }}
-          publish_dir: ./dist # Asegúrate de que este es el directorio de build
-
+          publish_dir: ./dist
