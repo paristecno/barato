@@ -66,7 +66,7 @@ const ModalCarro = ({ showModal, setShowModal, setShowBotonaso }) => {
     const numeroPedido = Math.floor(Math.random()*10000)
  
     // Resto del código para construir el enlace de WhatsApp
-    const linkWhatsApp = `https://api.whatsapp.com/send/?phone=541131908921&text=Pedido%20numero%20${numeroPedido}%0APedido%20de%20${nombre}%0ATel%C3%A9fono:%20${telefono}%0AHorario%20de%20retiro:%20${horaRetiro}%0AM%C3%A9todo%20de%20pago:%20${metodoPagoText}%0APrecio%20Total:%20$${totalPrice}%0AProductos:%0A${productosString}&type=phone_number&app_absent=0`;
+    const linkWhatsApp = `https://api.whatsapp.com/send/?phone=541128714096&text=Pedido%20numero%20${numeroPedido}%0APedido%20de%20${nombre}%0ATel%C3%A9fono:%20${telefono}%0AHorario%20de%20retiro:%20${horaRetiro}%0AM%C3%A9todo%20de%20pago:%20${metodoPagoText}%0APrecio%20Total:%20$${totalPrice}%0AProductos:%0A${productosString}&type=phone_number&app_absent=0`;
  
     window.location.href = linkWhatsApp;
   };
