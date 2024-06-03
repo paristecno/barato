@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { VscClose } from "react-icons/vsc";
 import { CartItem } from "./CartItem";
 import { useCart } from "../../store/useCart";
-
+ 
 const ModalCarro = ({ showModal, setShowModal, setShowBotonaso }) => {
   const { cartItems, totalPrice } = useCart();
   const [section, setSection] = useState("revisar");
@@ -17,9 +17,9 @@ const ModalCarro = ({ showModal, setShowModal, setShowBotonaso }) => {
     setShowModal(false);
     setShowBotonaso(true);
   };
-
+ 
   const [errorMensaje, setErrorMensaje] = useState("");
-
+ 
   const handleSiguiente = () => {
     if (section === "revisar") {
       setSection("informacion");
@@ -36,7 +36,7 @@ const ModalCarro = ({ showModal, setShowModal, setShowBotonaso }) => {
       }
     }
   };
-
+ 
   const handleAtras = () => {
     if (section === "informacion") {
       setSection("revisar");
@@ -44,31 +44,33 @@ const ModalCarro = ({ showModal, setShowModal, setShowBotonaso }) => {
       setSection("informacion");
     }
   };
-
+ 
   const handleFinalizar = () => {
     // Guardar los productos del carrito en el estado
     setProductosDelCarrito(cartItems);
-
+ 
     // Preparar la información de los productos en el formato deseado
     const productosInfo = cartItems.map((item) => {
       const { name, price, quantity } = item;
       return `${name} x ${quantity}`;
     });
-
+ 
     // Convertir la información de los productos en una cadena de texto
     const productosString = productosInfo.join("%0A"); // Separador de línea en la URL
-
+ 
     let metodoPagoText = metodoPago;
     if (metodoPago === "Efectivo") {
       metodoPagoText = `${metodoPago} y paga con $ ${cantidadEfectivo}`;
     }
-
+ 
+    const numeroPedido = Math.floor(Math.random()*10000)
+ 
     // Resto del código para construir el enlace de WhatsApp
-    const linkWhatsApp = `https://api.whatsapp.com/send/?phone=541131908921&text=Pedido%20de%20${nombre}%0ATel%C3%A9fono:%20${telefono}%0AHorario%20de%20retiro:%20${horaRetiro}%0AM%C3%A9todo%20de%20pago:%20${metodoPagoText}%0APrecio%20Total:%20$${totalPrice}%0AProductos:%0A${productosString}&type=phone_number&app_absent=0`;
-
+    const linkWhatsApp = `https://api.whatsapp.com/send/?phone=541131908921&text=Pedido%20numero%20${numeroPedido}%0APedido%20de%20${nombre}%0ATel%C3%A9fono:%20${telefono}%0AHorario%20de%20retiro:%20${horaRetiro}%0AM%C3%A9todo%20de%20pago:%20${metodoPagoText}%0APrecio%20Total:%20$${totalPrice}%0AProductos:%0A${productosString}&type=phone_number&app_absent=0`;
+ 
     window.location.href = linkWhatsApp;
   };
-
+ 
   return (
     <>
       {showModal && (
@@ -227,7 +229,7 @@ const ModalCarro = ({ showModal, setShowModal, setShowBotonaso }) => {
                           Selecciona el horario de retiro :
                         </label>
                         <div class="relative">
-                         
+ 
                           <input
                             type="time"
                             id="time"
@@ -348,5 +350,5 @@ const ModalCarro = ({ showModal, setShowModal, setShowBotonaso }) => {
     </>
   );
 };
-
+ 
 export default ModalCarro;
