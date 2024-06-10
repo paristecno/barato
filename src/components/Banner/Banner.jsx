@@ -32,7 +32,7 @@ const Banner = () => {
         <div className=" md:mt-5 text-slate-700">
           <p className="text-base xl:text-xl font-bold flex items-center md:font-medium">
             <IoStorefrontOutline className="text-red-500 mr-1" />
-            Lunes y Sábados de 08:00hs a 21:00hs
+            Lunes y Sábados de 09:00hs a 20:00hs
           </p>
           <p className="text-base xl:text-xl font-bold flex items-center md:font-medium">
             <IoCartOutline className="text-red-500 mr-1 font-extrabold" />

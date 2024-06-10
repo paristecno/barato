@@ -1,36 +1,52 @@
 import { useCart } from "../../store/useCart";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ProductCard } from "./ProductCard";
 import Botonaso from "../Cart/Boton";
 import ModaloCarro from "../Cart/ModaloCarro";
- 
+import { useLiveQuery } from 'dexie-react-hooks'
+import { productsdb } from '../../Db/db'
+import db from '../../Db/db'
+
+
 const ProductList = () => {
-  const { products, cartItems } = useCart();
+  const loadProducts = useCart((state) => state.loadProducts);
+  useEffect(() => {
+    loadProducts();
+  }, [loadProducts]);
+  const products = useCart((state) => state.products);
+  useEffect(() => {
+    // console.log('Loaded products:', products);
+  }, [products]);
+  
+  const allItems = useLiveQuery(() => productsdb.toArray(), [])
+  const { totalPrice, cartItems } = useCart();
   const [showModal, setShowModal] = useState(false);
   const [showBotonaso, setShowBotonaso] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("all");
- 
+  const [dbProducts, setDbProducts] = useState([]);
+
   const totalItems = cartItems.reduce(
     (total, item) => total + item.quantity,
     0
   );
- 
+
   const handleOpenModal = () => {
     setShowModal(true);
     setShowBotonaso(false); // Oculta el botón cuando se abre el modal
   };
- 
+
   const handleCloseModal = () => {
     setShowModal(false);
     setShowBotonaso(true); // Muestra el botón cuando se cierra el modal
   };
- 
+
   // Filtrar los productos por categoría seleccionada
-  const filteredProducts =
-    selectedCategory === "all"
-      ? products
-      : products.filter((product) => product.type === selectedCategory);
- 
+  const filteredProducts = allItems
+    ? selectedCategory === "all"
+      ? allItems
+      : allItems.filter((product) => product.type === selectedCategory)
+    : [];
+
   return (
     <div>
       <Botonaso
@@ -138,5 +154,5 @@ const ProductList = () => {
     </div>
   );
 };
- 
+
 export default ProductList;

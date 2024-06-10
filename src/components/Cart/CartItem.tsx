@@ -8,7 +8,7 @@ export type CartItemProps = Product & { quantity: number };
 export const CartItem = ({ id, img, name, price, quantity }: CartItemProps) => {
     const { removeFromCart } = useCart();
 
-    console.log("Items del carrito:", useCart(state => state.cartItems));
+    // console.log("Items del carrito:", useCart(state => state.cartItems));
 
     return (
         <div className="flex mt-2 items-center justify-between w-full">

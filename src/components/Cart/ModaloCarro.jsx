@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { VscClose } from "react-icons/vsc";
 import { CartItem } from "./CartItem";
 import { useCart } from "../../store/useCart";
@@ -7,31 +7,44 @@ const ModalCarro = ({ showModal, setShowModal, setShowBotonaso }) => {
   const { cartItems, totalPrice } = useCart();
   const [section, setSection] = useState("revisar");
   const [nombre, setNombre] = useState("");
-  const [telefono, setTelefono] = useState("");
   const [horaRetiro, setHoraRetiro] = useState("");
   const [metodoPago, setMetodoPago] = useState("");
   const [nombreCuentaMercadoPago, setNombreCuentaMercadoPago] = useState("");
   const [cantidadEfectivo, setCantidadEfectivo] = useState("");
   const [productosDelCarrito, setProductosDelCarrito] = useState([]);
+  const [minHora, setMinHora] = useState("09:00"); // Nuevo estado para la hora mínima
+  const [maxHora, setMaxHora] = useState("19:45"); // Nuevo estado para la hora máxima
   const handleCloseModal = () => {
     setShowModal(false);
     setShowBotonaso(true);
   };
  
   const [errorMensaje, setErrorMensaje] = useState("");
+
+  useEffect(() => {
+    const ahora = new Date();
+    const horaActual = ahora.getHours();
+    const minutosActuales = ahora.getMinutes();
+
+    if (horaActual >= 9 && horaActual <= 19) {
+      let minTime = `${horaActual}:${minutosActuales < 45 ? (minutosActuales + 15 - minutosActuales % 15).toString().padStart(2, '0') : '00'}`;
+      minTime = horaActual > 18 ? "19:00" : minTime; // Asegurar que minTime no exceda el límite
+      setMinHora(minTime);
+    }
+  }, []);
  
   const handleSiguiente = () => {
     if (section === "revisar") {
       setSection("informacion");
     } else if (section === "informacion") {
       // Verificar si se ha ingresado información en la sección "Programa tu pedido"
-      if (nombre !== "" && telefono !== "" && horaRetiro !== "") {
+      if (nombre !== ""  && horaRetiro !== "") {
         setSection("metodoPago");
         setErrorMensaje(""); // Limpiar el mensaje de error si se ha completado la información
       } else {
         // Mostrar mensaje de error si no se ha completado la información
         setErrorMensaje(
-          "Por favor completa todos los campos para continuar tu pedido"
+          "Completa todos los campos para continuar"
         );
       }
     }
@@ -66,7 +79,7 @@ const ModalCarro = ({ showModal, setShowModal, setShowBotonaso }) => {
     const numeroPedido = Math.floor(Math.random()*10000)
  
     // Resto del código para construir el enlace de WhatsApp
-    const linkWhatsApp = `https://api.whatsapp.com/send/?phone=541128714096&text=Pedido%20numero%20${numeroPedido}%0APedido%20de%20${nombre}%0ATel%C3%A9fono:%20${telefono}%0AHorario%20de%20retiro:%20${horaRetiro}%0AM%C3%A9todo%20de%20pago:%20${metodoPagoText}%0APrecio%20Total:%20$${totalPrice}%0AProductos:%0A${productosString}&type=phone_number&app_absent=0`;
+    const linkWhatsApp = `https://api.whatsapp.com/send/?phone=541128714096&text=Pedido%20numero%20${numeroPedido}%0APedido%20de%20${nombre}%0AHorario%20de%20retiro:%20${horaRetiro}%0AM%C3%A9todo%20de%20pago:%20${metodoPagoText}%0APrecio%20Total:%20$${totalPrice}%0AProductos:%0A${productosString}&type=phone_number&app_absent=0`;
  
     window.location.href = linkWhatsApp;
   };
@@ -77,7 +90,7 @@ const ModalCarro = ({ showModal, setShowModal, setShowBotonaso }) => {
         <>
           <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-80 z-50 overflow-y-scroll">
             <div
-              className="fixed md:items-center md:justify-center lg:justify-start lg:top-1/2 md:flex md:w-1/2 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-svh bg-gradient-to-b from-slate-200 via-slate-100 to-slate-200 rounded-lg p-4 shadow-xl"
+              className="fixed md:items-center md:justify-center md:h-full lg:justify-start lg:top-1/2 md:flex md:w-2/3 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-auto bg-gradient-to-b from-slate-200 via-slate-100 to-slate-200 rounded-lg p-4 shadow-xl"
               role="dialog"
               aria-modal="true"
               aria-labelledby="modal-headline"
@@ -190,18 +203,21 @@ const ModalCarro = ({ showModal, setShowModal, setShowBotonaso }) => {
                     </>
                   )}
                   {section === "revisar" && cartItems.length === 0 && (
-                    <p className="text-center text-gray-500">
+                  <div className="flex md:pt-3 md:w-full md:h-full items-center justify-center pt-[300px]">
+                      <p className="text-center text-gray-500">
                       El carrito está vacío
                     </p>
+                  </div>
                   )}
                   {section === "informacion" && (
                     <div className="flex flex-col space-y-4">
                       <h1 className="text-2xl md:text-xl pl-2 mb-12 md:mb-[-10px] my-2 md:my-[-40px] border-l-4 font-sans font-bold border-teal-400 dark:text-gray-500">
                         Programa tu pedido
                       </h1>
+                     <span className="font-bold text-sm">Nombre:</span>
                       <input
                         type="text"
-                        placeholder="Nombre"
+                        placeholder="Ej:. Juan Perez"
                         className="border rounded px-3 py-2"
                         value={nombre}
                         onChange={(e) => setNombre(e.target.value)}
@@ -211,48 +227,36 @@ const ModalCarro = ({ showModal, setShowModal, setShowBotonaso }) => {
                           {errorMensaje}
                         </h1>
                       )}
-                      <span className="text-xs font-bold text-gray-400">
-                        *Si pagas con Mercado Pago poner el mismo nombre que
-                        está en la cuenta*
+                      <span className="text-xs font-serif text-gray-700">
+                      » Si pagas con Mercado Pago poner el mismo nombre que
+                        está en la cuenta «
                       </span>
-                      <input
-                        type="text"
-                        placeholder="Teléfono"
-                        className="border rounded px-3 py-2"
-                        value={telefono}
-                        onChange={(e) => setTelefono(e.target.value)}
-                      />
+                     
                         <label
-                          for="time"
-                          class="block mb-2 text-sm font-medium text-gray-900 "
+                          htmlFor="time"
+                          className="block   text-sm font-bold text-gray-900 "
                         >
-                          Selecciona el horario de retiro :
+                          Selecciona el horario de retiro:
                         </label>
-                        <div class="relative">
+                       
+                        
+                        <div className="relative">
  
                           <input
                             type="time"
                             id="time"
-                            class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            className="bg-gray-50 border  leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             min="09:00"
                             max="18:00"
                             value={horaRetiro}
                             onChange={(e)=>setHoraRetiro(e.target.value)}
                             required
                           />
+                          <span className="font-serif block text-xs mt-2 font-medium text-gray-700"> 
+                          » Evite elegir horarios cercanos a la hora actual. Minimo 30 minutos de antelación «
+                       </span>
                         </div>
-                      {/* <select
-                        className="border rounded px-3 py-2"
-                        value={horaRetiro}
-                        onChange={(e) => setHoraRetiro(e.target.value)}
-                      >
-                        <option value="">Horario de retiro...</option>
-                        {Array.from({ length: 9 }, (_, i) => (
-                          <option key={i} value={`${i + 9}:00`}>{`${
-                            i + 9
-                          }:00`}</option>
-                        ))}
-                      </select> */}
+                     
                     </div>
                   )}
                   {section === "metodoPago" && (
